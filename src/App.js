@@ -1,24 +1,22 @@
-import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import MainPage from './components/MainPage'
+import { Provider } from 'react-redux';
+import store from './slices/index'
+
 
 function App() {
+  console.log('app started')
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+      <Provider store={store}>
+        <div className='container p-5 h-100' style={{ 'height': '100vh' }}>
+          <div className='row flex-column justify-content-center h-100'>
+            <MainPage />
+          </div>
+        </div>
+      </Provider>
+
   );
 }
 

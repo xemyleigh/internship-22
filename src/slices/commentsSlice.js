@@ -29,7 +29,8 @@ const commentsSlice = createSlice({
     },
     reducers: {
         cleanComments(state, action) {
-            state.comments = []
+            state.comments.entities = {}
+            state.comments.ids = []
         },
     },
     extraReducers: (builder) => {

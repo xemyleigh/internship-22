@@ -9,16 +9,11 @@ const Comment = ({ parentId, author, text, time, kids }) => {
     const dispatch = useDispatch()
     const { entities, ids } = useSelector(state => state.descendantCommentsInfo.descendantComments)
     const filteredIds = ids.filter(id => {
-        // console.log('parentId', parentId)
-        // console.log('commentParentId:', entities[id].parent)
-        // console.log('commentId:', id)
-        // console.log(entities[id])
         return entities[id].parent === parentId
     })
     if (filteredIds.length > 0) console.log(filteredIds)
 
     const comments = filteredIds.map(id => entities[id])
-    // console.log(comments)
 
     const date = new Date(time * 1000)
     const dateOptions = {

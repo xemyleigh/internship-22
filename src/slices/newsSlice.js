@@ -5,22 +5,24 @@ import axios from 'axios'
 export const fetchNews = createAsyncThunk(
     'fetchNews',
     async () => {
-        console.log('dfdsfsdf')
         const response = await axios.get(urls.getNewStories())
-        console.log(response)
         const lastHundredStories = response.data.slice(0, 100)
         const data = await Promise.all(lastHundredStories.map(async storyId => {
-            const response = await axios.get(urls.getStoryData(storyId))
+            const response = await axios.get(urls.getItemData(storyId))
             return response.data
         }))
-        
-        return data
+        const formattedData = data.map(d => [ d.id, d ])
+        const ids = data.map(d => d.id)
+        return [ Object.fromEntries(formattedData), ids ]
     }
 )
 
 const newsSlice = createSlice({
     name: 'news',
-    initialState: { news: [], isLoading: true },
+    initialState: { news: {
+        entities: {},
+        ids: []
+    }, isLoading: true },
     reducers: {
         setLoadingButtonStatus(state, { payload }) {
             console.log(payload)
@@ -29,23 +31,18 @@ const newsSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchNews.pending, (state, action) => {
-                console.log(action)
-                console.log('PENDINGGGGGGGG')
                 state.isLoading = true
             })
-            .addCase(fetchNews.fulfilled, (state, action) => {
-                const { payload } = action
-                console.log(action)
+            .addCase(fetchNews.fulfilled, (state, { payload }) => {
+                const [ entities, ids ] = payload
                 console.log(payload)
-                console.log('DOWNLOADEDDDDDDDDDDDDDDDD')
-                state.news = payload
+                state.news.entities = entities
+                state.news.ids = ids
                 state.isLoading = false
             })
             .addCase(fetchNews.rejected, (state, action) => {
-                console.log('ERRORRRRRRR')
-                console.log(action.error)
                 state.isLoading = false
-
+                console.log(action.error)
             })
     }
 })

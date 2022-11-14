@@ -7,13 +7,14 @@ import { fetchDescendantComments } from "../slices/descendantCommentsSlice"
 
 const Comment = ({ parentId, author, text, time, kids }) => {
     const dispatch = useDispatch()
-    const { entities, ids } = useSelector(state => state.descendantCommentsInfo.descendantComments)
-    const filteredIds = ids.filter(id => {
-        return entities[id].parent === parentId
-    })
-    if (filteredIds.length > 0) console.log(filteredIds)
+    // === logic for nested comments ===
+    // const { entities, ids } = useSelector(state => state.descendantCommentsInfo.descendantComments)
+    // const filteredIds = ids.filter(id => {
+    //     return entities[id].parent === parentId
+    // })
 
-    const comments = filteredIds.map(id => entities[id])
+    // const comments = filteredIds.map(id => entities[id])
+    // =================================
 
     const date = new Date(time * 1000)
     const dateOptions = {
@@ -38,6 +39,8 @@ const Comment = ({ parentId, author, text, time, kids }) => {
                 <h5>{author}:</h5>
                 <p className="">{decode(text)}</p>
                 <p className="text-muted ">{formattedDate}</p>
+                {/* === logic for nested comments ===
+
                 {kids && (
                     <>
                         <Button onClick={openNestedCommentsHandler(kids)}>Open nested comments</Button>
@@ -45,12 +48,12 @@ const Comment = ({ parentId, author, text, time, kids }) => {
                             <ListGroup variant="flush">
 
                                 <ListGroup.Item>
-                                    {/* {comments.map(({ by, id, text, time, kids, parent }) => <Comment key={id} id={id} author={by} text={text} time={time} kids={kids} parentId={parent} />)} */}
+                                    {comments.map(({ by, id, text, time, kids, parent }) => <Comment key={id} id={id} author={by} text={text} time={time} kids={kids} parentId={parent} />)}
                                 </ListGroup.Item>
                             </ListGroup>
                         }
                     </>
-                )}
+                )} */}
             </div>
         </ListGroup.Item>
         

@@ -1,21 +1,45 @@
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MainPage from './components/MainPage'
-import { Provider } from 'react-redux';
-import store from './slices/index'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import StoryPage from './components/StoryPage'
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchNews } from "./slices/newsSlice";
+
+
+
 
 
 function App() {
-  console.log('app started')
-  return (
+  const [ updateTimer, setUpdateTimer ] = useState(0)
+  const dispatch = useDispatch()
 
-      <Provider store={store}>
-        <div className='container p-5 h-100' style={{ 'height': '100vh' }}>
-          <div className='row flex-column justify-content-center h-100'>
-            <MainPage />
-          </div>
-        </div>
-      </Provider>
+  console.log('dfdfdfd')
+  setTimeout(function run() {
+      setUpdateTimer(updateTimer + 1)
+      setTimeout(run, 60000);
+  }, 60000);    
+
+  useEffect(() => {
+      dispatch(fetchNews())
+      // setFirstDownloadStatus('done')
+
+  }, [updateTimer])
+
+
+
+  return (
+            <Router>
+              <Switch>
+                <Route exact path="/">
+                  <MainPage />
+                </Route>
+                <Route path="/:id">
+                  <StoryPage />
+                </Route>
+              </Switch>
+            </Router>
+
 
   );
 }

@@ -1,65 +1,41 @@
 import { actions as commentsActions } from "../slices/commentsSlice";
 import { actions as descendantCommentActions } from "../slices/descendantCommentsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Spinner, ListGroup, Button } from "react-bootstrap";
 import { decode } from "html-entities";
 import { fetchDescendantComments } from "../fetchApi";
 import { fetchComments } from "../fetchApi";
 import { toast } from "react-toastify";
+import convertDate from "../convertDate";
 
-const Comment = ({ parentId, author, text, time, kids }) => {
+const Comment = ({ parentId, author, text, time, kids, depth }) => {
   const dispatch = useDispatch();
-  // === logic for nested comments ===
-  // const { entities, ids } = useSelector(state => state.descendantCommentsInfo.descendantComments)
-  // const filteredIds = ids.filter(id => {
-  //     return entities[id].parent === parentId
-  // })
+  const [isButtonShown, setButtonShownStatus] = useState(true);
 
-  // const comments = filteredIds.map(id => entities[id])
-
-  const openNestedCommentsHandler = (parentId) => () => {
-    dispatch(fetchDescendantComments(parentId));
+  const openNestedCommentsHandler = (parentId) => async () => {
+    try {
+      await dispatch(fetchDescendantComments({ parentId, depth: depth + 1 }));
+      setButtonShownStatus(false);
+    } catch (e) {
+      toast.error("Check your internet connection");
+    }
   };
 
-  // console.log(comments)
-  //
-  // =================================
+  const date = convertDate(time);
 
-  const date = new Date(time * 1000);
-  const dateOptions = {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    weekday: "long",
-    timezone: "GMT",
-    hour: "numeric",
-    minute: "numeric",
-    hour12: false,
-  };
-
-  const formattedDate = date.toLocaleDateString("en-US", dateOptions);
   return (
-    <ListGroup.Item className="py-3">
+    <ListGroup.Item className="py-3" style={{ paddingLeft: depth * 50 }}>
       <div className="">
         <h5>{author}:</h5>
         <p className="">{decode(text)}</p>
-        <p className="text-muted ">{formattedDate}</p>
-        {/* === logic for nested comments === */}
+        <p className="text-muted ">{date}</p>
 
-        {kids && (
+        {kids && isButtonShown && (
           <>
             <Button onClick={openNestedCommentsHandler(parentId)}>
               Open nested comments
             </Button>
-            {/* {(comments.length > 0) &&
-                            <ListGroup variant="flush">
-
-                                <ListGroup.Item>
-                                    {comments.map(({ by, id, text, time, kids, parent }) => <Comment key={id} id={id} author={by} text={text} time={time} kids={kids} parentId={parent} />)}
-                                </ListGroup.Item>
-                            </ListGroup>
-                        } */}
           </>
         )}
       </div>
@@ -92,7 +68,7 @@ const CommentsBox = ({ commentsIds, parentId }) => {
       {commentsIds ? (
         <>
           <p className="text-muted">Count: {comments.length}</p>
-          {comments.map(({ by, id, text, time, kids }) => (
+          {comments.map(({ by, id, text, time, kids, depth }) => (
             <Comment
               key={id}
               parentId={id}
@@ -100,6 +76,7 @@ const CommentsBox = ({ commentsIds, parentId }) => {
               text={text}
               time={time}
               kids={kids}
+              depth={depth}
             />
           ))}
         </>

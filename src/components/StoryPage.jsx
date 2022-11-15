@@ -5,15 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchComments } from "../fetchApi";
 import convertDate from "../convertDate";
 import { toast } from "react-toastify";
-import axios from "axios";
-import urls from "../urls";
+import { actions as commentActions } from "../slices/commentsSlice";
 
 const StoryPage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const id = useLocation().pathname.slice(1);
   const data = useLocation().state;
-  const { author, score, comments, time, title, url } = data;
+  const { author, comments, time, title, url } = data;
 
   const isLoading = useSelector((state) => state.commentsInfo.isLoading);
   const date = convertDate(time);
@@ -26,6 +25,7 @@ const StoryPage = () => {
     try {
       await dispatch(fetchComments(id));
     } catch (e) {
+      dispatch(commentActions.setLoading(false));
       if (e.message === "network") {
         toast.error("Check your internet connection");
       } else {

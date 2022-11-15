@@ -9,25 +9,25 @@ import { ToastContainer as Toaster, toast } from 'react-toastify';
 
 function App() {
 
-  const [ updateTimer, setUpdateTimer ] = useState(0)
-  const dispatch = useDispatch()
+  // const [ updateTimer, setUpdateTimer ] = useState(0)
+  // const dispatch = useDispatch()
 
-  setTimeout(function run() {
-      setUpdateTimer(updateTimer + 1)
-      setTimeout(run, 60000);
-  }, 60000);    
+  // setTimeout(function run() {
+  //     setUpdateTimer(updateTimer + 1)
+  //     setTimeout(run, 60000);
+  // }, 60000);    
 
-  useEffect(() => {
-    try {
-      dispatch(fetchNews())
-    } catch(e) {
-      if (e.isAxiosError) {
-        toast('No internet connection')
-      } else {
-        toast('Unknown error')
-      }
-    }
-  }, [updateTimer])
+  // useEffect(() => {
+  //   try {
+  //     dispatch(fetchNews())
+  //   } catch(e) {
+  //     if (e.isAxiosError) {
+  //       toast('No internet connection')
+  //     } else {
+  //       toast('Unknown error')
+  //     }
+  //   }
+  // }, [updateTimer])
 
   return (
     <Router>

@@ -33,5 +33,8 @@ export const fetchComments = createAsyncThunk(
 
 export const fetchDescendantComments = createAsyncThunk(
     'fetchDescendantComments',
-    async (commentsIds) => fetchData(commentsIds)
+    async (id) => {
+        const { data } = await axios.get(urls.getItemData(id))
+        return fetchData(data.kids)    
+}
 )

@@ -7,6 +7,6 @@ export default configureStore({
     reducer: {
         newsInfo: newsSlice,
         commentsInfo: commentsSlice,
-        descendantCommentsInfo: descendantCommentsSlice,
+        // descendantCommentsInfo: descendantCommentsSlice,
     }
 })

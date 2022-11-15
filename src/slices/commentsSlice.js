@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchComments } from "../fetchApi";
-
+import { fetchDescendantComments } from "../fetchApi";
 
 
 const commentsSlice = createSlice({
@@ -39,6 +39,22 @@ const commentsSlice = createSlice({
                 console.log(action.error)
                 if (action.error.name === 'AxiosError') throw Error('network')
             })
+
+
+            .addCase(fetchDescendantComments.pending, (state) => {
+                console.log('PENDING COMMENTS')
+            })
+            .addCase(fetchDescendantComments.fulfilled, (state, { payload }) => {
+                console.log('COMMENTS DOWNLOADED')
+                const [ entities, ids ] = payload
+                state.comments.entities = { ...state.comments.entities, ...entities }
+                const bothIds = [ ...state.comments.ids, ...ids ]
+                state.comments.ids = [...new Set(bothIds)]
+            })
+            .addCase(fetchDescendantComments.rejected, (state, action) => {
+                console.log(action.error)
+            })
+
     }
 })
 

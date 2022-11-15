@@ -11,10 +11,7 @@ import urls from "../urls";
 const StoryPage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-  console.log(useLocation());
-  // const { author, score, comments, time, title, url } = useLocation().state
   const id = useLocation().pathname.slice(1);
-  console.log(id);
   const data = useLocation().state;
   const { author, score, comments, time, title, url } = data;
 

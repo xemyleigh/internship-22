@@ -1,22 +1,8 @@
-import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
-import axios from "axios";
-import urls from "../urls";
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchDescendantComments } from '../fetchApi'
 
 
-export const fetchDescendantComments = createAsyncThunk(
-    'fetchDescendantComments',
-    async (commentsIds) => {
-        const data = await Promise.all(commentsIds.map( async id => {
-            const response = await axios.get(urls.getItemData(id))
-            return response.data
-        }))
-        console.log(data)
-        const normalizedComments = data.map(comment => [ comment.id, comment ] )
-        const ids = data.map(comment => comment.id)
-        return [ Object.fromEntries(normalizedComments), ids ]        
 
-    }
-)
 
 const descendantCommentsSlice = createSlice({
     name: 'descendantComments',
@@ -29,7 +15,8 @@ const descendantCommentsSlice = createSlice({
     },
     reducers: {
         cleanComments(state, action) {
-            state.comments = []
+            state.descendantComments.entities = {}
+            state.descendantComments.ids = []
         },
     },
     extraReducers: (builder) => {

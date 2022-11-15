@@ -1,21 +1,6 @@
-import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
-import axios from "axios";
-import urls from "../urls";
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchComments } from "../fetchApi";
 
-
-export const fetchComments = createAsyncThunk(
-    'fetchComments',
-    async (commentsIds) => {
-        const data = await Promise.all(commentsIds.map( async id => {
-            const response = await axios.get(urls.getItemData(id))
-            return response.data
-        }))
-        console.log(data)
-        const normalizedComments = data.map(comment => [ comment.id, comment ] )
-        const ids = data.map(comment => comment.id)
-        return [ Object.fromEntries(normalizedComments), ids ]        
-    }
-)
 
 
 const commentsSlice = createSlice({
@@ -25,7 +10,7 @@ const commentsSlice = createSlice({
             entities: {},
             ids: []
         },
-        isLoading: true
+        isLoading: true,
     },
     reducers: {
         cleanComments(state, action) {
@@ -41,15 +26,18 @@ const commentsSlice = createSlice({
             })
             .addCase(fetchComments.fulfilled, (state, { payload }) => {
                 console.log('COMMENTS DOWNLOADED')
-                const [ entities, ids ] = payload
-                console.log(ids)
-                state.comments.entities = { ...state.comments.entities, ...entities }
-                state.comments.ids = [ ...state.comments.ids, ...ids ]
                 state.isLoading = false
+                if (payload !== undefined) {
+                    const [ entities, ids ] = payload
+                    console.log(ids)
+                    state.comments.entities = entities
+                    state.comments.ids = ids
+                }
             })
             .addCase(fetchComments.rejected, (state, action) => {
                 state.isLoading = false
                 console.log(action.error)
+                if (action.error.name === 'AxiosError') throw Error('network')
             })
     }
 })

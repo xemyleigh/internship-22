@@ -1,28 +1,16 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import urls from '../urls'
-import axios from 'axios'
+import { createSlice } from '@reduxjs/toolkit'
+import { fetchNews } from '../fetchApi'
 
-export const fetchNews = createAsyncThunk(
-    'fetchNews',
-    async () => {
-        const response = await axios.get(urls.getNewStories())
-        const lastHundredStories = response.data.slice(0, 100)
-        const data = await Promise.all(lastHundredStories.map(async storyId => {
-            const response = await axios.get(urls.getItemData(storyId))
-            return response.data
-        }))
-        const formattedData = data.map(d => [ d.id, d ])
-        const ids = data.map(d => d.id)
-        return [ Object.fromEntries(formattedData), ids ]
-    }
-)
 
 const newsSlice = createSlice({
     name: 'news',
-    initialState: { news: {
-        entities: {},
-        ids: []
-    }, isLoading: true },
+    initialState: { 
+        news: {
+            entities: {},
+            ids: []
+        },
+        isLoading: true,
+ },
     reducers: {
         setLoadingButtonStatus(state, { payload }) {
             console.log(payload)
@@ -34,6 +22,7 @@ const newsSlice = createSlice({
                 state.isLoading = true
             })
             .addCase(fetchNews.fulfilled, (state, { payload }) => {
+                console.log(payload)
                 const [ entities, ids ] = payload
                 console.log(payload)
                 state.news.entities = entities
@@ -42,7 +31,6 @@ const newsSlice = createSlice({
             })
             .addCase(fetchNews.rejected, (state, action) => {
                 state.isLoading = false
-                console.log(action.error)
             })
     }
 })

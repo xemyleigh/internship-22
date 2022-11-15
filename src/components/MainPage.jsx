@@ -1,23 +1,25 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Card, Button, Badge, Spinner } from 'react-bootstrap'
-import { fetchNews } from "../slices/newsSlice";
+import { fetchNews } from "../fetchApi";
 import { Link } from 'react-router-dom';
+import convertDate from '../convertDate';
+import { toast } from 'react-toastify';
 
 const Story = (storyData) => {
-    const { id, author, score, comments, time, title, url } = storyData
-    const date = new Date(time * 1000)
-    const dateOptions = {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        weekday: 'long',
-        timezone: 'GMT',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false,
-      };
-    
-    const formattedDate = date.toLocaleDateString('en-US', dateOptions)
+    const { id, author, score, comments, time, title, url } = storyData    
+    const date = convertDate(time)
+    const errorStatus = useSelector(state => state.commentsInfo.error)
+
+    switch(errorStatus) {
+        case 'network':
+            toast('No internet connection')
+            break
+        case 'unknown':
+            toast('Unknown error')
+            break
+    }
+
+
     return (
         <Card className='mb-3 shadow'>
             <Card.Header className='d-flex justify-content-start gap-1'>
@@ -28,7 +30,7 @@ const Story = (storyData) => {
                 <Card.Title><a href={url}>{title}</a></Card.Title>
                 <Link to={{ pathname: `/${id}`, state: storyData }} className='btn btn-primary mb-3 mt-2'>Visit topic</Link>
                 {comments && <p>{`Count: ${comments.length}`}</p>}
-                <p>{formattedDate}</p>
+                <p>{date}</p>
             </Card.Body>
         </Card>
     )
@@ -40,9 +42,8 @@ const MainPage = () => {
     const news = ids.map((id) => entities[id])
     const isLoading = useSelector(state => state.newsInfo.isLoading)
     const updateButtonHandler = () => {
-        dispatch(fetchNews())
+            dispatch(fetchNews())
     }
-    
 
     return (
         <Container>
@@ -62,7 +63,6 @@ const MainPage = () => {
                     Refresh news
                     </Button>
             </div>
-            
             <ul>
                 {news.map(({ id, by, score, kids, time, title, url }) => <Story key={id} id={id} author={by} score={score} comments={kids} time={time} title={title} url={url} />)}
             </ul>

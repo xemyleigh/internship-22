@@ -1,9 +1,12 @@
-import { actions as commentsActions, fetchComments } from "../slices/commentsSlice"
+import { actions as commentsActions } from "../slices/commentsSlice"
+import { actions as descendantCommentActions } from '../slices/descendantCommentsSlice'
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
 import { Spinner, ListGroup, Button } from "react-bootstrap"
 import { decode } from 'html-entities'
-import { fetchDescendantComments } from "../slices/descendantCommentsSlice"
+import { fetchDescendantComments } from "../fetchApi"
+import { fetchComments } from "../fetchApi"
+import { toast } from "react-toastify"
 
 const Comment = ({ parentId, author, text, time, kids }) => {
     const dispatch = useDispatch()
@@ -14,6 +17,13 @@ const Comment = ({ parentId, author, text, time, kids }) => {
     // })
 
     // const comments = filteredIds.map(id => entities[id])
+
+    // const openNestedCommentsHandler = (comments) => () => {
+    //     dispatch(fetchDescendantComments(comments))
+    // }
+
+    // console.log(comments)
+    // 
     // =================================
 
     const date = new Date(time * 1000)
@@ -28,9 +38,6 @@ const Comment = ({ parentId, author, text, time, kids }) => {
         hour12: false,
       };
 
-      const openNestedCommentsHandler = (comments) => () => {
-        dispatch(fetchDescendantComments(comments))
-      }
     
     const formattedDate = date.toLocaleDateString('en-US', dateOptions)
     return (
@@ -56,11 +63,10 @@ const Comment = ({ parentId, author, text, time, kids }) => {
                 )} */}
             </div>
         </ListGroup.Item>
-        
     )
 }
 
-const CommentsBox = ({ commentsIds }) => {
+const CommentsBox = ({ commentsIds, parentId }) => {
     
     const dispatch = useDispatch()
     const isLoading = useSelector(state => state.commentsInfo.isLoading)
@@ -68,32 +74,36 @@ const CommentsBox = ({ commentsIds }) => {
     const comments = ids.map(id => entities[id])
 
 
+    const contentWhileLoading = (
+        <div className="display-block text-center">
+            <Spinner as="span" animation="border" size="lg" role="status" aria-hidden="true" className='me-2 p-3' variant="primary"/>
+        </div>
+    )
+
+    const contentWhenLoaded = (
+        <ListGroup variant="flush" className="">
+            {(commentsIds) ? (
+                <>
+                    <p className="text-muted">Count: {comments.length}</p>
+                    {comments.map(({ by, id, text, time, kids }) => <Comment key={id} parentId={id} author={by} text={text} time={time} kids={kids} />)}
+                </>
+                )
+            : (<p className="text-muted">No comments yet</p>)}
+        </ListGroup>
+    )
+
     useEffect(() => {
-        dispatch(fetchComments(commentsIds))
-        return () => dispatch(commentsActions.cleanComments())
+        dispatch(fetchComments(parentId))
+        return () => {
+            dispatch(commentsActions.cleanComments())
+            dispatch(descendantCommentActions.cleanComments())
+        }
     }, [])
 
     return (
         <>
-            
-            <h2 className="mb-3">Comments</h2>
-            {(isLoading && commentsIds) && (
-                <div className="display-block text-center">
-                    <Spinner
-                        as="span"
-                        animation="border"
-                        size="lg"
-                        role="status"
-                        aria-hidden="true"
-                        className='me-2 p-3'
-                        variant="primary"
-                    />
-                </div>
-            )}
-            <ListGroup variant="flush" className="">
-                {(commentsIds) ? (comments.map(({ by, id, text, time, kids }) => <Comment key={id} parentId={id} author={by} text={text} time={time} kids={kids} />))
-                : (<p className="text-muted">No comments yet</p>)}
-            </ListGroup>
+            <h2>Comments</h2>
+            {(isLoading) ? (contentWhileLoading) : (contentWhenLoaded)}
         </>
     )
 } 

@@ -1,39 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Card, Button, Badge, Spinner } from "react-bootstrap";
-import { fetchNews } from "../fetchApi";
-import { Link } from "react-router-dom";
-import convertDate from "../convertDate";
-import { toast } from "react-toastify";
 import { useEffect } from "react";
-
-const Story = (storyData) => {
-  const { id, author, score, comments, time, title, url } = storyData;
-  const date = convertDate(time);
-
-  return (
-    <Card className="mb-3 shadow">
-      <Card.Header className="d-flex justify-content-start gap-1">
-        Author: <b>{author}</b>
-        <p className="text-muted m-0 ms-auto">
-          Rating <Badge bg="primary">{score}</Badge>
-        </p>
-      </Card.Header>
-      <Card.Body>
-        <Card.Title>
-          <a href={url}>{title}</a>
-        </Card.Title>
-        <Link
-          to={{ pathname: `/${id}`, state: storyData, id: id }}
-          className="btn btn-primary mb-3 mt-2"
-        >
-          Visit topic
-        </Link>
-        {comments && <p>{`Count: ${comments.length}`}</p>}
-        <p>{date}</p>
-      </Card.Body>
-    </Card>
-  );
-};
+import { fetchNews } from "../fetchApi";
+import { actions as newsActions } from "../slices/newsSlice";
+import { Container, Button, Spinner } from "react-bootstrap";
+import { toast } from "react-toastify";
+import Story from "./Story";
 
 const MainPage = () => {
   const dispatch = useDispatch();
@@ -41,14 +12,25 @@ const MainPage = () => {
   const news = ids.map((id) => entities[id]);
   const isLoading = useSelector((state) => state.newsInfo.isLoading);
 
-  const updateButtonHandler = () => {
-    dispatch(fetchNews());
+  const updateNewsFunc = async () => {
+    try {
+      console.log("error!!!!!!!!!!!!!!!");
+      await dispatch(fetchNews());
+    } catch (e) {
+      dispatch(newsActions.setLoading(false));
+      if (e.message === "network") {
+        toast.error("Check your internet connection");
+      } else {
+        toast.error("Unknown error");
+      }
+    }
   };
 
   useEffect(() => {
     dispatch(fetchNews());
-    const timer = setInterval(() => {
-      dispatch(fetchNews());
+
+    const timer = setInterval(async () => {
+      updateNewsFunc();
     }, 60000);
 
     return () => clearInterval(timer);
@@ -62,7 +44,7 @@ const MainPage = () => {
           variant="primary text-white"
           className="p-2 px-3"
           disabled={isLoading}
-          onClick={updateButtonHandler}
+          onClick={updateNewsFunc}
         >
           {isLoading && (
             <Spinner

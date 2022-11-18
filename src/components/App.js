@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import MainPage from './MainPage'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import StoryPage from './StoryPage'

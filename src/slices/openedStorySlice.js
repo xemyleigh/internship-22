@@ -17,7 +17,6 @@ const openedStorySlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchStory.fulfilled, (state, { payload }) => {
-                console.log(payload)
                 if (payload) {
                     state.story = payload   
                 }

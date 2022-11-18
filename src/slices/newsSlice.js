@@ -21,9 +21,7 @@ const newsSlice = createSlice({
                 state.isLoading = true
             })
             .addCase(fetchNews.fulfilled, (state, { payload }) => {
-                console.log(payload)
                 const [ entities, ids ] = payload
-                console.log(payload)
                 state.news.entities = entities
                 state.news.ids = ids
                 state.isLoading = false

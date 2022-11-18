@@ -5,12 +5,14 @@ import { fetchComments } from "../fetchApi";
 import Comment from "./Comment";
 import { actions as commentsActions } from "../slices/commentsSlice";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const CommentsBox = ({ commentsIds, parentId, descendants }) => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.commentsInfo.isLoading);
   const { entities, ids } = useSelector((state) => state.commentsInfo.comments);
   const comments = ids.map((id) => entities[id]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const downloadComments = async () => {
@@ -46,7 +48,10 @@ const CommentsBox = ({ commentsIds, parentId, descendants }) => {
     <ListGroup variant="flush" className="">
       {commentsIds ? (
         <>
-          <p className="text-muted">Count: {descendants}</p>
+          <p className="text-muted">
+            {t("commentsBox.commentsCount")}
+            {descendants}
+          </p>
           {comments.map(({ by, id, text, time, kids, depth }) => (
             <Comment
               key={id}
@@ -60,14 +65,14 @@ const CommentsBox = ({ commentsIds, parentId, descendants }) => {
           ))}
         </>
       ) : (
-        <p className="text-muted">No comments yet</p>
+        <p className="text-muted">{t("commentsBox.noComments")}</p>
       )}
     </ListGroup>
   );
 
   return (
     <div className="p-4 mt-3 border-top border-2 bg-light">
-      <h2>Comments</h2>
+      <h2>{t("commentsBox.heading")}</h2>
       {isLoading ? contentWhileLoading : contentWhenLoaded}
     </div>
   );

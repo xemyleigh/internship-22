@@ -4,6 +4,7 @@ import { fetchNews } from "../fetchApi";
 import { actions as newsActions } from "../slices/newsSlice";
 import { Container, Button, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import Story from "./Story";
 
 const MainPage = () => {
@@ -11,6 +12,7 @@ const MainPage = () => {
   const { entities, ids } = useSelector((state) => state.newsInfo.news);
   const news = ids.map((id) => entities[id]);
   const isLoading = useSelector((state) => state.newsInfo.isLoading);
+  const { t } = useTranslation();
 
   const updateNewsFunc = async () => {
     try {
@@ -18,9 +20,9 @@ const MainPage = () => {
     } catch (e) {
       dispatch(newsActions.setLoading(false));
       if (e.message === "network") {
-        toast.error("Check your internet connection");
+        toast.error(t("errors.network"));
       } else {
-        toast.error("Unknown error");
+        toast.error(t("errors.unknown"));
       }
     }
   };
@@ -38,7 +40,7 @@ const MainPage = () => {
   return (
     <Container className="py-5">
       <div className="text-center my-5">
-        <h1 className="mb-3">Hacker News Interface</h1>
+        <h1 className="mb-3">{t("mainPage.heading")}</h1>
         <Button
           variant="info text-white"
           className="p-2 px-3"
@@ -55,7 +57,7 @@ const MainPage = () => {
               className="me-2"
             />
           )}
-          Refresh news
+          {t("mainPage.refreshButton")}
         </Button>
       </div>
       <ul className="p-0">

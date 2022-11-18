@@ -6,12 +6,14 @@ import { fetchDescendantComments } from "../fetchApi";
 import { toast } from "react-toastify";
 import convertDate from "../convertDate";
 import parse from "html-react-parser";
+import { useTranslation } from "react-i18next";
 
 const Comment = ({ parentId, author, text, time, kids, depth }) => {
   const dispatch = useDispatch();
   const [isButtonShown, setButtonShownStatus] = useState(true);
   const commentDate = convertDate(time);
   const commentText = parse(decode(text));
+  const { t } = useTranslation();
 
   const openNestedCommentsHandler = (parentId) => async () => {
     try {
@@ -42,7 +44,7 @@ const Comment = ({ parentId, author, text, time, kids, depth }) => {
               onClick={openNestedCommentsHandler(parentId)}
               variant="outline-primary"
             >
-              Open nested comments
+              {t("comment.openNestedCommentsButton")}
             </Button>
           </>
         )}

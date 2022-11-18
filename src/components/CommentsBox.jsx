@@ -29,7 +29,7 @@ const CommentsBox = ({ commentsIds, parentId, descendants }) => {
   }, [commentsIds]);
 
   const contentWhileLoading = (
-    <div className="display-block text-center">
+    <div className="display-block text-center my-4">
       <Spinner
         as="span"
         animation="border"

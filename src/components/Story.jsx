@@ -34,7 +34,6 @@ const Story = (storyData) => {
         >
           Open comments
         </Link>
-        {kids && <p>{`Count: ${descendants}`}</p>}
         <p>{date}</p>
       </Card.Body>
     </Card>

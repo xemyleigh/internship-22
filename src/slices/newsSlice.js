@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { fetchNews } from '../fetchApi'
 
-
 const newsSlice = createSlice({
     name: 'news',
     initialState: { 
@@ -12,13 +11,13 @@ const newsSlice = createSlice({
         isLoading: true,
  },
     reducers: {
-        setLoadingButtonStatus(state, { payload }) {
-            console.log(payload)
+        setLoading(state, { payload }) {
+            state.isLoading = payload
         }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchNews.pending, (state, action) => {
+            .addCase(fetchNews.pending, (state) => {
                 state.isLoading = true
             })
             .addCase(fetchNews.fulfilled, (state, { payload }) => {
@@ -31,6 +30,11 @@ const newsSlice = createSlice({
             })
             .addCase(fetchNews.rejected, (state, action) => {
                 state.isLoading = false
+                if (action.error.name === "AxiosError") {
+                    throw Error("network")
+                  } else {
+                    throw Error('Unknown error')
+                  }
             })
     }
 })

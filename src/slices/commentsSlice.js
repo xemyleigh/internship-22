@@ -30,7 +30,7 @@ const commentsSlice = createSlice({
       .addCase(fetchComments.fulfilled, (state, { payload }) => {
         console.log("COMMENTS DOWNLOADED");
         state.isLoading = false;
-        if (payload !== undefined) {
+        if (payload) {
           const [entities, ids] = payload;
           console.log(ids);
           state.comments.entities = entities;
@@ -39,7 +39,6 @@ const commentsSlice = createSlice({
       })
       .addCase(fetchComments.rejected, (state, action) => {
         state.isLoading = false;
-        console.log(action.error);
         if (action.error.name === "AxiosError") throw Error("network");
       })
 
@@ -60,7 +59,11 @@ const commentsSlice = createSlice({
         }, []);
       })
       .addCase(fetchDescendantComments.rejected, (state, action) => {
-        if (action.error.name === "AxiosError") throw Error("network");
+        if (action.error.name === "AxiosError") {
+          throw Error("network")
+        } else {
+          throw Error('Unknown error')
+        }
       });
   },
 });

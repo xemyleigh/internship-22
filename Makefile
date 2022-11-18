@@ -1,0 +1,3 @@
+run:
+		yarn
+		yarn start

@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import MainPage from './components/MainPage'
+import MainPage from './MainPage'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import StoryPage from './components/StoryPage'
+import StoryPage from './StoryPage'
 import { ToastContainer as Toaster } from 'react-toastify';
 
 function App() {

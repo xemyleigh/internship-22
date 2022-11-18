@@ -14,7 +14,6 @@ const MainPage = () => {
 
   const updateNewsFunc = async () => {
     try {
-      console.log("error!!!!!!!!!!!!!!!");
       await dispatch(fetchNews());
     } catch (e) {
       dispatch(newsActions.setLoading(false));
@@ -27,21 +26,21 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchNews());
-
-    const timer = setInterval(async () => {
-      updateNewsFunc();
+    updateNewsFunc();
+    const timer = setTimeout(async function update() {
+      await updateNewsFunc();
+      setTimeout(update, 60000);
     }, 60000);
 
-    return () => clearInterval(timer);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <Container>
-      <div className="text-center mb-5 mt-5">
-        <h1 className="mb-4">Hacker News Interface</h1>
+    <Container className="py-5">
+      <div className="text-center my-5">
+        <h1 className="mb-3">Hacker News Interface</h1>
         <Button
-          variant="primary text-white"
+          variant="info text-white"
           className="p-2 px-3"
           disabled={isLoading}
           onClick={updateNewsFunc}
@@ -59,17 +58,18 @@ const MainPage = () => {
           Refresh news
         </Button>
       </div>
-      <ul>
-        {news.map(({ id, by, score, kids, time, title, url }) => (
+      <ul className="p-0">
+        {news.map(({ id, by, score, kids, time, title, url, descendants }) => (
           <Story
             key={id}
             id={id}
             author={by}
             score={score}
-            comments={kids}
+            kids={kids}
             time={time}
             title={title}
             url={url}
+            descendants={descendants}
           />
         ))}
       </ul>

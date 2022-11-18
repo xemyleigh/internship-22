@@ -10,28 +10,38 @@ import parse from "html-react-parser";
 const Comment = ({ parentId, author, text, time, kids, depth }) => {
   const dispatch = useDispatch();
   const [isButtonShown, setButtonShownStatus] = useState(true);
+  const commentDate = convertDate(time);
+  const commentText = parse(decode(text));
 
   const openNestedCommentsHandler = (parentId) => async () => {
     try {
       await dispatch(fetchDescendantComments({ parentId, depth: depth + 1 }));
       setButtonShownStatus(false);
     } catch (e) {
-      toast.error("Check your internet connection");
+      if (e.message === "network") {
+        toast.error("Check your internet connection");
+      } else {
+        toast.error("Unknown error");
+      }
     }
   };
 
-  const date = convertDate(time);
-
   return (
-    <ListGroup.Item className="py-3" style={{ paddingLeft: depth * 50 }}>
-      <div className="">
+    <ListGroup.Item
+      className="py-3 bg-light"
+      style={{ paddingLeft: depth * 50 }}
+    >
+      <div className="d-flex flex-column gap-2">
         <h5>{author}:</h5>
-        <p className="">{parse(decode(text))}</p>
-        <p className="text-muted ">{date}</p>
+        <div>{commentText}</div>
+        <p className="text-muted m-0">{commentDate}</p>
 
         {kids && isButtonShown && (
           <>
-            <Button onClick={openNestedCommentsHandler(parentId)}>
+            <Button
+              onClick={openNestedCommentsHandler(parentId)}
+              variant="outline-primary"
+            >
               Open nested comments
             </Button>
           </>
